@@ -25,6 +25,10 @@ class Blog(models.Model):
     status = models.CharField(max_length=20,choices=STATUS_CHOICES,default=PENDING)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.title
+    
+
 class Comments(models.Model):
     commenter = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
