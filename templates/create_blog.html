@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+{% if messages %}{{messages}}{% endif %}
+<form action='/create-blog' method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form.as_p}}
+    <input type="submit" value="Create Blog">
+</form>
+{% endblock content %}
