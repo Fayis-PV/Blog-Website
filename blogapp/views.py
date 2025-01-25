@@ -1,3 +1,6 @@
+from idlelib.rpc import request_queue
+from logging import exception
+
 from django.shortcuts import render,redirect
 from .forms import *
 from .models import *
@@ -62,32 +65,59 @@ def create_blog(request):
                 return redirect('/')
             else:
                 messages.error(request,'Please clearly fill all forms')
+    else:
+        return redirect('/login')
     return render(request,'create_blog.html',{'form':form})
 
 def details_blog(request,id):
-    pass
+    if request.user:
+        try:
+            blog= Blog.objects.get(id = id)
+            comments = Comments.objects.filter(blog = blog)
+            if blog:
+                return render(request, 'article.html',{'blog':blog, 'comments': comments})
+
+        except exception as e:
+            messages.error(request,'Error occured:'+str(e))
+            return redirect('/')
+    return redirect('/login')
+
 
 def update_blog(request,id):
     if request.method == 'POST':
-        try:
-            pass
-        except:
-            pass
-    return render(request,"login.html")
+        form = BlogForm(request.POST,request.FILES)
+        if form.is_valid():
+            blog = Blog.objects.get(id=id)
+            blog.title = form.cleaned_data.get('title')
+            blog.content = form.cleaned_data.get('content')
+            blog.thumbnail = form.cleaned_data.get('thumbnail')
+            blog.save()
+            messages.success(request, 'Successfully updated the blog')
+            return redirect('/')
+        else:
+            messages.error(request, 'Please clearly fill all forms')
+    else:
+        return redirect('/login')
+    return render(request, 'create_blog.html', {'form': form})
+
 
 def delete_blog(request,id):
-    if request.method == 'POST':
-        try:
-            pass
-        except:
-            pass
-    return render(request,"login.html")
+    try:
+        blog = Blog.objects.get(id = id)
+        blog.delete()
+        messages.success(request,'The blog deleted successfully')
+        return redirect('/')
+    except Exception as e:
+        messages.error(request,'An Error Occured:'+str(e))
+
 
 def create_command(request, blog_id):
     if request.method == 'POST':
         try:
-            pass
-        except:
-            pass
+            blog = Blog.objects.get(pk = blog_id)
+            comment = request.POST['comment']
+            blog.comment_set.create(comment =comment,commenter = request.user)
+            messages.success(request,'Comment added')
+            return redirect(f'/details/{blog_id}')
     return render(request,"login.html")
 
