@@ -1,11 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, User
 
-# Create your models here.
+# # Create your models here.
 
 class CustomUser(AbstractUser):
-    profile_pic = models.ImageField(upload_to='img/profile/')
-    mobile = models.IntegerField()
+    profile_pic = models.ImageField(upload_to='img/profile/',null = True, blank = True)
+    mobile = models.IntegerField(null = True, blank = True)
 
 class Blog(models.Model):
     PENDING = 'pending'
