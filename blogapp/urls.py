@@ -8,10 +8,13 @@ urlpatterns = [
 
     path("register", views.register, name = 'register'),
     path("login", views.login_user , name = 'login'),
+    path("logout", views.logout_user, name = 'logout'),
 
     path("create-blog", views.create_blog, name = 'create_blog'),
     path("blog-details/<int:id>", views.details_blog, name = 'details_blog'),
-    path("update-blog/<int:id>", views.update_blog, name = 'updates_blog'),
+    path("update-blog/<int:id>", views.update_blog, name = 'update_blog'),
     path("delete-blog/<int:id>", views.delete_blog, name = 'delete_blog'),
+
+    path('create-comment/<int:blog_id>', views.create_comment, name = 'create_comment')
     
 ]

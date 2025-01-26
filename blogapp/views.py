@@ -58,6 +58,12 @@ def login_user(request):
     return render(request,"login.html")
 
 @login_required(login_url='/login')
+def logout_user(request):
+    logout(request)
+    return redirect('/login')
+
+
+@login_required(login_url='/login')
 def create_blog(request):
     form = BlogForm()
     if request.user:
@@ -102,9 +108,9 @@ def update_blog(request,id):
             return redirect('/')
         else:
             messages.error(request, 'Please clearly fill all forms')
-    else:
-        return redirect('/login')
-    return render(request, 'create_blog.html', {'form': form})
+    form = BlogForm()
+    blog = Blog.objects.get(id=id)
+    return render(request, 'update_blog.html', {'form': form,'blog':blog})
 
 @login_required(login_url='/login')
 def delete_blog(request,id):
@@ -117,14 +123,18 @@ def delete_blog(request,id):
         messages.error(request,'An Error Occured:'+str(e))
 
 @login_required(login_url='/login')
-def create_command(request, blog_id):
+def create_comment(request, blog_id):
     if request.method == 'POST':
         try:
             blog = Blog.objects.get(pk = blog_id)
+            print('s')
             comment = request.POST['comment']
-            blog.comment_set.create(comment =comment,commenter = request.user)
+            print(blog)
+            blog.comments_set.create(comment =comment,commenter = request.user)
             messages.success(request,'Comment added')
-            return redirect(f'/details/{blog_id}')
+            print('e')
+            return redirect(f'/blog-details/{blog_id}')
         except Exception as e:
+            print(e)
             messages.error(request, 'Error Occurred: '+str(e))
     return redirect('/')

@@ -38,6 +38,12 @@ class Comments(models.Model):
     comment = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.comment
+
 class Notification(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     notify = models.TextField()
+
+    def __str__(self):
+        return self.notify
