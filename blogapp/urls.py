@@ -31,10 +31,8 @@ urlpatterns = [
     path('password-reset/',
          PasswordResetView.as_view(
              template_name='password_reset.html',
-             html_email_template_name='password_reset_email.html'
-         ),
-         name='password-reset'
-         ),
+             html_email_template_name='password_reset_email.html' ),
+         name='password-reset'),
     path('password-reset/done/', PasswordResetDoneView.as_view(template_name='password_reset_done.html'),
          name='password_reset_done'),
     path('password-reset-confirm/<uidb64>/<token>/',

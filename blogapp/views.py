@@ -185,6 +185,6 @@ login_required(login_url='/login')
 def profile(request):
     if request.user.is_authenticated:
         user = request.user
-        return render(request,'profile.html', {'user',user})
+        return render(request,'profile.html', {'user':user})
     return redirect('/')
 
