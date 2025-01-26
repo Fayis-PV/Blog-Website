@@ -59,10 +59,18 @@ MAIN
             <article class="article-post">
                 <p>{{blog.content}}</p>
             </article>
+            <div class="flex justify-between"
             {% if user == blog.author %}
             <div class="btn-group mb-2" role="group" aria-label="Basic example">
                 <a type="button" href="{% url 'update_blog' blog.id %}" class="btn btn-info">Update</a>
                 <a type="button" href="{% url 'delete_blog' blog.id %}" class="btn btn-danger" onclick="">Delete</a>
+            </div>
+            {% endif %}
+            {% if user.is_superuser %}
+            <div class="btn-group mb-2" role="group" aria-label="Basic example">
+                <p><b>Status: </b>{{blog.status}}</p>
+                <a type="button" href="{% url 'approve-blog' blog.id %}" class="btn btn-info">Approve</a>
+                <a type="button" href="{% url 'block-blog' blog.id %}" class="btn btn-danger" onclick="">Block</a>
             </div>
             {% endif %}
             <div class="border p-5 bg-lightblue ">

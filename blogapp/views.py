@@ -5,11 +5,15 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 
 # Create your views here.
 
 def home(request):
-    blogs = Blog.objects.all().order_by('-timestamp').values()
+    if request.user.is_superuser:
+        blogs = Blog.objects.all().order_by('-timestamp').values()
+    else:
+        blogs = Blog.objects.filter(status = 'Approved').order_by('-timestamp').values()
     return render(request, 'index.html',{'blogs':blogs})
 
 
@@ -138,3 +142,49 @@ def create_comment(request, blog_id):
             print(e)
             messages.error(request, 'Error Occurred: '+str(e))
     return redirect('/')
+
+@login_required(login_url='/login')
+def approve_blog(request,id):
+    if request.user.is_superuser:
+        blog = Blog.objects.get(id = id)
+        blog.status = 'Approved'
+        blog.save()
+        send_mail(
+            "Your Blog has approved",
+            f"Your Blog {blog.title} had approved by admins of the site",
+            "hello@gmail.com",
+            [blog.author.email],
+            fail_silently=False,
+        )
+        notify = Notification(user= blog.author, notify = f"Your Blog {blog.title} had approved by admins of the site")
+        notify.save()
+        messages.success(request,'Blog Approved')
+        return redirect('/')
+    return redirect('/blog-details',id)
+
+@login_required(login_url='/login')
+def block_blog(request,id):
+    if request.user.is_superuser:
+        blog = Blog.objects.get(id = id)
+        blog.status = 'Blocked'
+        blog.save()
+        send_mail(
+            "Your Blog has blocked",
+            f"Your Blog {blog.title} had blocked by admins of the site",
+            "hello@gmail.com",
+            [blog.author.email],
+            fail_silently=False,
+        )
+        notify = Notification(user=blog.author, notify=f"Your Blog {blog.title} had blocked by admins of the site")
+        notify.save()
+        messages.success(request, 'Blog Blocked')
+        return redirect('/')
+    return redirect('/blog-details',id)
+
+login_required(login_url='/login')
+def profile(request):
+    if request.user.is_authenticated:
+        user = request.user
+        return render(request,'profile.html', {'user',user})
+    return redirect('/')
+
