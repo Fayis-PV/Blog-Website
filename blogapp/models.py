@@ -7,6 +7,9 @@ class CustomUser(AbstractUser):
     profile_pic = models.ImageField(upload_to='img/profile/',null = True, blank = True)
     mobile = models.IntegerField(null = True, blank = True)
 
+    def __str__(self):
+        return self.first_name +" "+ self.last_name
+
 class Blog(models.Model):
     PENDING = 'pending'
     APPROVED = 'approved'

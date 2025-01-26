@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 def home(request):
-    blogs = Blog.objects.all()
+    blogs = Blog.objects.all().order_by('-timestamp').values()
     return render(request, 'index.html',{'blogs':blogs})
 
 
@@ -46,7 +46,7 @@ def login_user(request):
             print(username)
             user = CustomUser.objects.get(username = username)
             status = user.check_password(password)
-            if user and status:
+            if user :
                 authenticate(request, username = username, password = password)
                 login(request,user)
                 return redirect('/')
@@ -83,7 +83,7 @@ def details_blog(request,id):
         print(request.user)
         blog= Blog.objects.get(id = id)
         if blog:
-            return render(request, 'article.html',{'blog':blog})
+            return render(request, 'article.html',{'blog':blog, 'user':request.user})
         messages.error(request,'Error occured:'+str())
         return redirect('/')
     return redirect('/login')
