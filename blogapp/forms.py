@@ -6,7 +6,7 @@ from .models import *
 class RegisterForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = '__all__'
+        fields = ['first_name','last_name','username','mobile','email','profile_pic']
 
 
 class BlogForm(forms.ModelForm):

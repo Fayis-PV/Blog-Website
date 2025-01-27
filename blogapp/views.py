@@ -19,25 +19,24 @@ def home(request):
 
 def register(request):
     if request.method == 'POST':
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        cpassword = request.POST.get('cpassword')
-        try:
-            if password != cpassword and password != '':
-                messages.error(request, 'Password doesn\'t match')
-            elif CustomUser.objects.filter(email = email):
-                messages.error(request, 'User with same email already exists')
-            else:
-                custom = CustomUser(first_name= first_name, last_name = last_name,username = username, email = email)
-                custom.set_password(password)
-                custom.save()
-                messages.success(request, 'User Created Successfully')
-                return redirect('login')
-        except Exception as e:
-            messages.error(request,str(e))
+        form = RegisterForm(request.POST,request.FILES)
+        if form.is_valid():
+            customer = form.save(commit=False)
+            password = request.POST['password']
+            password2 = request.POST['cpassword']
+            email = form.cleaned_data['email']
+            try:
+                if password != password2 and password != '':
+                    messages.error(request, 'Password doesn\'t match')
+                elif CustomUser.objects.filter(email = email):
+                    messages.error(request, 'User with same email already exists')
+                else:
+                    customer.set_password(password)
+                    customer.save()
+                    messages.success(request, 'User Created Successfully')
+                    return redirect('login')
+            except Exception as e:
+                messages.error(request,str(e))
             
     return render(request,"register.html")
     
